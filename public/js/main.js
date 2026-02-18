@@ -124,12 +124,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (canvas && scrollSection) {
         const ctx = canvas.getContext('2d');
         
-        // Determine which animation folder to use based on page
+        // Determine which animation folder and frame numbers to use
         let animationFolder = '../logo animation/animation 1/';
+        let startFrame = 1000;
+        let totalFrames = 143;
+        
         if (document.body.classList.contains('option-2')) {
             animationFolder = '../logo animation/animation 2/';
+            startFrame = 2000;
+            totalFrames = 143;
         } else if (document.body.classList.contains('option-3')) {
             animationFolder = '../logo animation/animation 3/';
+            startFrame = 3000;
+            totalFrames = 122;
         }
         
         // Animation settings
@@ -152,11 +159,13 @@ document.addEventListener('DOMContentLoaded', () => {
             // Start animation once first frame is loaded
             requestAnimationFrame(animate);
         };
-        firstImg.src = animationFolder + 'animation 1000.jpg';
+        firstImg.src = animationFolder + 'animation ' + startFrame + '.jpg';
         
         // Preload all frames
+        const frames = [];
+        
         for (let i = 0; i < totalFrames; i++) {
-            const frameNum = 1000 + i;
+            const frameNum = startFrame + i;
             const img = new Image();
             img.src = animationFolder + 'animation ' + frameNum + '.jpg';
             frames.push(img);
