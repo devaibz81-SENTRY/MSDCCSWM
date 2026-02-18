@@ -626,15 +626,17 @@ body {
     overflow: hidden;
 }
 
-#animationCanvas {
+.logo-video {
     max-width: 90%;
     max-height: 80vh;
+    width: auto;
+    height: auto;
     object-fit: contain;
     cursor: pointer;
     transition: transform 0.3s ease;
 }
 
-#animationCanvas:hover {
+.logo-video:hover {
     transform: scale(1.02);
 }
 

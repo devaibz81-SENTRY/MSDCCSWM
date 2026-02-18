@@ -116,97 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================
-    // AUTO-PLAYING LOOPING LOGO ANIMATION
+    // VIDEO ANIMATION HANDLING
     // ============================================
-    const canvas = document.getElementById('animationCanvas');
-    const scrollSection = document.querySelector('.scroll-animation-section');
+    const logoVideo = document.querySelector('.logo-video');
     
-    if (canvas && scrollSection) {
-        const ctx = canvas.getContext('2d');
-        
-        // Determine which animation folder and frame numbers to use
-        let animationFolder = '../logo animation/animation 1/';
-        let startFrame = 1000;
-        let totalFrames = 143;
-        
-        if (document.body.classList.contains('option-2')) {
-            animationFolder = '../logo animation/animation 2/';
-            startFrame = 2000;
-            totalFrames = 143;
-        } else if (document.body.classList.contains('option-3')) {
-            animationFolder = '../logo animation/animation 3/';
-            startFrame = 3000;
-            totalFrames = 122;
-        }
-        
-        // Animation settings
-        let currentFrame = 0;
-        let isPlaying = true;
-        let lastFrameTime = 0;
-        const fps = 30; // Frames per second - adjust for speed
-        const frameDuration = 1000 / fps;
-        
-        // Preload all frames
-        const totalFrames = 140;
-        const frames = [];
-        
-        // Load first image to get dimensions
-        const firstImg = new Image();
-        firstImg.onload = () => {
-            canvas.width = firstImg.width;
-            canvas.height = firstImg.height;
-            ctx.drawImage(firstImg, 0, 0);
-            // Start animation once first frame is loaded
-            requestAnimationFrame(animate);
-        };
-        firstImg.src = animationFolder + 'animation ' + startFrame + '.jpg';
-        
-        // Preload all frames
-        const frames = [];
-        
-        for (let i = 0; i < totalFrames; i++) {
-            const frameNum = startFrame + i;
-            const img = new Image();
-            img.src = animationFolder + 'animation ' + frameNum + '.jpg';
-            frames.push(img);
-        }
-        
-        // Animation loop
-        function animate(timestamp) {
-            if (!isPlaying) return;
-            
-            // Control frame rate
-            if (timestamp - lastFrameTime >= frameDuration) {
-                const frame = frames[currentFrame];
-                
-                if (frame && frame.complete) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(frame, 0, 0);
-                }
-                
-                currentFrame++;
-                
-                // Loop back to start
-                if (currentFrame >= totalFrames) {
-                    currentFrame = 0;
-                }
-                
-                lastFrameTime = timestamp;
-            }
-            
-            // Keep looping
-            requestAnimationFrame(animate);
-        }
-        
-        // Optional: Pause on hover
-        canvas.addEventListener('mouseenter', () => {
-            isPlaying = false;
+    if (logoVideo) {
+        // Ensure video plays
+        logoVideo.play().catch(e => {
+            console.log('Auto-play prevented:', e);
         });
         
-        canvas.addEventListener('mouseleave', () => {
-            isPlaying = true;
-            lastFrameTime = performance.now();
-            requestAnimationFrame(animate);
+        // Pause on hover
+        logoVideo.addEventListener('mouseenter', () => {
+            logoVideo.pause();
+        });
+        
+        logoVideo.addEventListener('mouseleave', () => {
+            logoVideo.play();
         });
     }
 });
