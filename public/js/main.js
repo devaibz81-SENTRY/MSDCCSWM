@@ -116,11 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ============================================
-    // SCROLL ANIMATION - Plays on scroll
+    // AUTO-PLAYING LOOPING LOGO ANIMATION
     // ============================================
     const canvas = document.getElementById('animationCanvas');
     const scrollSection = document.querySelector('.scroll-animation-section');
-    const progressBar = document.querySelector('.scroll-progress-bar');
     
     if (canvas && scrollSection) {
         const ctx = canvas.getContext('2d');
@@ -133,65 +132,72 @@ document.addEventListener('DOMContentLoaded', () => {
             animationFolder = '../logo animation/animation 3/';
         }
         
+        // Animation settings
+        let currentFrame = 0;
+        let isPlaying = true;
+        let lastFrameTime = 0;
+        const fps = 30; // Frames per second - adjust for speed
+        const frameDuration = 1000 / fps;
+        
+        // Preload all frames
+        const totalFrames = 140;
+        const frames = [];
+        
         // Load first image to get dimensions
         const firstImg = new Image();
         firstImg.onload = () => {
             canvas.width = firstImg.width;
             canvas.height = firstImg.height;
             ctx.drawImage(firstImg, 0, 0);
+            // Start animation once first frame is loaded
+            requestAnimationFrame(animate);
         };
         firstImg.src = animationFolder + 'animation 1000.jpg';
         
         // Preload all frames
-        const totalFrames = 140; // Adjust based on actual frame count
-        const frames = [];
-        let loadedCount = 0;
-        
         for (let i = 0; i < totalFrames; i++) {
             const frameNum = 1000 + i;
             const img = new Image();
-            img.onload = () => {
-                loadedCount++;
-            };
-            img.onerror = () => {
-                // Frame doesn't exist, stop trying
-            };
             img.src = animationFolder + 'animation ' + frameNum + '.jpg';
             frames.push(img);
         }
         
-        // Scroll-based frame update
-        let lastFrame = -1;
-        
-        const updateFrame = () => {
-            const sectionTop = scrollSection.offsetTop;
-            const sectionHeight = scrollSection.offsetHeight;
-            const windowHeight = window.innerHeight;
-            const scrollY = window.scrollY;
+        // Animation loop
+        function animate(timestamp) {
+            if (!isPlaying) return;
             
-            // Calculate scroll progress through the section
-            const scrollStart = sectionTop - windowHeight;
-            const scrollEnd = sectionTop + sectionHeight - windowHeight;
-            const scrollProgress = Math.max(0, Math.min(1, (scrollY - scrollStart) / (scrollEnd - scrollStart)));
-            
-            // Convert to frame number
-            const frameIndex = Math.floor(scrollProgress * (totalFrames - 1));
-            
-            // Update progress bar
-            if (progressBar) {
-                progressBar.style.width = (scrollProgress * 100) + '%';
+            // Control frame rate
+            if (timestamp - lastFrameTime >= frameDuration) {
+                const frame = frames[currentFrame];
+                
+                if (frame && frame.complete) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(frame, 0, 0);
+                }
+                
+                currentFrame++;
+                
+                // Loop back to start
+                if (currentFrame >= totalFrames) {
+                    currentFrame = 0;
+                }
+                
+                lastFrameTime = timestamp;
             }
             
-            // Only redraw if frame changed
-            if (frameIndex !== lastFrame && frames[frameIndex] && frames[frameIndex].complete) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(frames[frameIndex], 0, 0);
-                lastFrame = frameIndex;
-            }
-        };
+            // Keep looping
+            requestAnimationFrame(animate);
+        }
         
-        window.addEventListener('scroll', updateFrame);
-        window.addEventListener('resize', updateFrame);
-        updateFrame();
+        // Optional: Pause on hover
+        canvas.addEventListener('mouseenter', () => {
+            isPlaying = false;
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            isPlaying = true;
+            lastFrameTime = performance.now();
+            requestAnimationFrame(animate);
+        });
     }
 });
